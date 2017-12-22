@@ -1,15 +1,21 @@
 package com.tistory.chebaum.endascalc_10v;
 
 import android.content.DialogInterface;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
+
+    private DrawerLayout mDrawerLayout;
+    private ActionBarDrawerToggle mToggle;
 
     TextView str, calcStr;
     double finalResult, result;
@@ -64,6 +70,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mDrawerLayout=(DrawerLayout)findViewById(R.id.drawerLayout);
+        mToggle=new ActionBarDrawerToggle(this, mDrawerLayout,R.string.open, R.string.close);
+
+        mDrawerLayout.addDrawerListener(mToggle);
+        mToggle.syncState();
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         // BtnOnClickListener 객체 생성 후, 모든 버튼의 이벤트 리스너로 지정해준다.
         BtnOnClickListener onClickListener=new BtnOnClickListener();
         for(int temp:buttons) {
@@ -78,6 +92,14 @@ public class MainActivity extends AppCompatActivity {
         str=(TextView) findViewById(R.id.str);
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(mToggle.onOptionsItemSelected(item)){
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     public void number_btn_clicked(int id){
         String btn_text=((Button)findViewById(id)).getText().toString();
         Toast.makeText(getApplicationContext(),btn_text+"을(를) 눌렀어요!",Toast.LENGTH_SHORT).show();
@@ -86,6 +108,8 @@ public class MainActivity extends AppCompatActivity {
             calcStr.setText("");
             op_pressed=false;
         }
+        if(str.getText().toString().equals("0"))
+            str.setText("");
         if(enter_clicked&&!op_pressed)
             initializeForm();
 
@@ -95,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
         enter_clicked=false;
     }
     public void backspace_btn_clicked(){
-        if(enter_clicked||op_pressed)
+        if(enter_clicked||op_pressed||str.getText().toString().equals(""))
             return;
         if(Double.parseDouble(calcStr.getText().toString())<10.0){
             calcStr.setText("0");
