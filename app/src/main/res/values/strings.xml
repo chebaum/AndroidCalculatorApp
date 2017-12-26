@@ -3,4 +3,9 @@
     <string name="endBtnStr">종료하기</string>
     <string name="open">열기 </string>
     <string name="close">닫기 </string>
+    <string name="endasInfo"> (주)앤다스는 초고속 네트워크 저장기술을 바탕으로, 영상전용 저장 솔루션 개발, 통합 관제 시스템 개발, 디지털 영상 분배 시스템 개발, 네트워크 저장 기술 개발, 방재시스템 연동 기술 개발 등 최고의 Full HD 영상 감시 솔루션을 제공하는 R/D 기반의 영상보안/스토리지 전문기업입니다. 또한, 관공서, 대학, 종합병원, 금융기관, 일반 기업, 공장, 문화재, 아파트 등의 시스템 구축 및 운영 사업을 성공적으로 수행한 경험을 보유하고 있어 영상보안과 관련된 통합관제 S/W 시스템 및 제품의 연구개발, 생산에서 설계, 시공까지의 일괄 처리능력을 지닌 기업입니다.</string>
+    <string name="endasInfo_location"> 서울특별시 송파구 법원로 9길 26, H 비즈니스 파크 C동 407호</string>
+    <string name="endasInfo_regNum"> 사업자등록번호 : 105-87-28982</string>
+    <string name="endasInfo_contact"> Tel. 070-4530-6327 | FAX. 0303-3443-6327</string>
+    <string name="endasInfo_copyright"> Copyright © Endas Co., Ltd. All Rights Reserved.</string>
 </resources>

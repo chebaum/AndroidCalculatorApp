@@ -1,14 +1,24 @@
 package com.tistory.chebaum.endascalc_10v;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.graphics.Color;
+import android.support.annotation.NonNull;
+import android.support.design.internal.NavigationMenu;
+import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,7 +34,8 @@ public class MainActivity extends AppCompatActivity {
     Button btn;
     Calc tempData=new Calc();
     int[] buttons={R.id.btn0,R.id.btn1,R.id.btn2,R.id.btn3,R.id.btn4,R.id.btn5,R.id.btn6,R.id.btn7,R.id.btn8,R.id.btn9,
-            R.id.btn_backspace,R.id.btn_clr,R.id.btn_enter,R.id.btn_sum,R.id.btn_sub,R.id.btn_mul,R.id.btn_div, R.id.btn_exit};
+            R.id.btn_backspace,R.id.btn_clr,R.id.btn_enter,R.id.btn_sum,R.id.btn_sub,R.id.btn_mul,R.id.btn_div};
+    String[] filters={"finish_app","background_to_red","background_to_green","background_to_blue"};
 
     class BtnOnClickListener implements Button.OnClickListener{
         @Override
@@ -58,9 +69,9 @@ public class MainActivity extends AppCompatActivity {
                 case R.id.btn_div:
                     operand_btn_clicked(id);
                     break;
-                case R.id.btn_exit:
-                    exit_btn_clicked();
-                    break;
+                //case R.id.btn_exit:
+                 //   exit_btn_clicked();
+                //    break;
             }
         }
     }
@@ -76,7 +87,50 @@ public class MainActivity extends AppCompatActivity {
         mDrawerLayout.addDrawerListener(mToggle);
         mToggle.syncState();
 
+        NavigationView leftNavView=(NavigationView)findViewById(R.id.leftNavBar);
+        leftNavView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                Intent intent;
+                switch (item.getItemId()){
+                    case R.id.nav_settings:
+                        intent=new Intent(getApplicationContext(),SettingsActivity.class);
+                        startActivity(intent);
+                        break;
+                    case R.id.nav_info:
+                        intent=new Intent(getApplicationContext(),InfoActivity.class);
+                        startActivity(intent);
+                    default:
+                        break;
+                }
+                return false;
+            }
+        });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        BroadcastReceiver receiver=new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String action=intent.getAction();
+                switch (action){
+                    case "finish_app":
+                        finish();
+                        return;
+                    case "background_to_red":
+                        findViewById(R.id.background_main).setBackgroundColor(Color.RED);
+                        return;
+                    case "background_to_green":
+                        findViewById(R.id.background_main).setBackgroundColor(Color.GREEN);
+                        return;
+                    case "background_to_blue":
+                        findViewById(R.id.background_main).setBackgroundColor(Color.BLUE);
+                        return;
+                }
+            }
+        };
+        IntentFilter intentFilter=new IntentFilter();
+        for(String str:filters) intentFilter.addAction(str);
+        registerReceiver(receiver, intentFilter);
 
         // BtnOnClickListener 객체 생성 후, 모든 버튼의 이벤트 리스너로 지정해준다.
         BtnOnClickListener onClickListener=new BtnOnClickListener();
@@ -93,11 +147,26 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onCreateOptionsMenu(Menu menu){
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.topbar_menu,menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
         if(mToggle.onOptionsItemSelected(item)){
             return true;
         }
-        return super.onOptionsItemSelected(item);
+
+        switch (item.getItemId()){
+            case R.id.exitBtn:
+                exit_btn_clicked();
+                return true;
+
+            default:
+                return true;
+        }
     }
 
     public void number_btn_clicked(int id){
@@ -140,7 +209,7 @@ public class MainActivity extends AppCompatActivity {
         op_pressed=sum_pressed=sub_pressed;
     }
     public void enter_btn_clicked(){
-        if(op_pressed) return;
+        if(op_pressed||enter_clicked) return; // enter 다시 누르면 이전계산 반복하도록 구현하기
         switch (nextOp)
         {
             case "+":
