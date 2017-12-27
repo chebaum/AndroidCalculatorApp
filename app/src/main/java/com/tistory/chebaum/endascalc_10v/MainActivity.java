@@ -140,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
         for(String str:filters) intentFilter.addAction(str);
         registerReceiver(receiver, intentFilter);
 
-        mDBHelper = new myDBHelper(this);
+        mDBHelper = new myDBHelper(this.getApplicationContext());
         Button btn_db_insert=(Button)findViewById(R.id.btn_db_insert);
         btn_db_insert.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -158,6 +158,10 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         cTitle=input.getText().toString();
+                        sqlDB=mDBHelper.getWritableDatabase();
+                        sqlDB.execSQL("INSERT INTO calcRecords(cTitle, cStr, cResult) VALUES ("+"'cTitle',"+"'"+str.getText().toString()+"',"+Double.toString(finalResult)+");");
+                        sqlDB.close();
+                        Toast.makeText(MainActivity.this, "입력되었습니다.", Toast.LENGTH_SHORT).show();
                     }
                 });
                 builder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
@@ -167,13 +171,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
                 builder.show();
-
-
-                sqlDB=mDBHelper.getWritableDatabase();
-                //mDBHelper.onUpgrade(sqlDB,1,2); 초기화 위한 코드
-                //sqlDB.execSQL("INSERT INTO calcRecords VALUES ('"+"'cTitle,'"+"'str.getText().toString()',"+Double.toString(finalResult)+");");
-                //sqlDB.close();
-                //Toast.makeText(MainActivity.this, "입력되었습니다.", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -220,7 +217,7 @@ public class MainActivity extends AppCompatActivity {
         }
         @Override
         public void onCreate(SQLiteDatabase db) {
-            db.execSQL("CREATE TABLE calcRecords (cId INT PRIMARY KEY AUTOINCREMENT, cTitle CHAR(100), cStr CHAR(100), cResult DOUBLE);");
+            db.execSQL("CREATE TABLE calcRecords (cId INTEGER PRIMARY KEY AUTOINCREMENT, cTitle CHAR(100), cStr CHAR(100), cResult DOUBLE);");
         }
         @Override
         public void onUpgrade(SQLiteDatabase db, int i, int i1) {
