@@ -49,9 +49,20 @@
                 android:id="@+id/btn_clr"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="3"
+                android:layout_weight="2"
                 android:backgroundTint="@color/buttonColor"
-                android:text="CE"
+                android:text="CLEAR"
+                android:textAlignment="center"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btn_backspace"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:backgroundTint="@color/buttonColor"
+                android:text="DEL"
                 android:textAlignment="center"
                 android:textSize="24sp"
                 android:textStyle="bold" />
@@ -233,23 +244,22 @@
             android:layout_weight="4">
 
             <Button
+                android:id="@+id/btn_db_insert"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:backgroundTint="@color/buttonColor"
+                android:text="계산결과 저장하기"
+                android:textAlignment="center"
+                android:textSize="16sp" />
+
+            <Button
                 android:id="@+id/btn0"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:backgroundTint="@color/colorAccent"
                 android:text="0"
-                android:textAlignment="center"
-                android:textSize="24sp"
-                android:textStyle="bold" />
-
-            <Button
-                android:id="@+id/btn_backspace"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="2"
-                android:backgroundTint="@color/buttonColor"
-                android:text="backspace"
                 android:textAlignment="center"
                 android:textSize="24sp"
                 android:textStyle="bold" />

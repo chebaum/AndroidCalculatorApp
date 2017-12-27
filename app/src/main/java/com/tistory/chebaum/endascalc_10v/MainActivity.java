@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.design.internal.NavigationMenu;
@@ -14,15 +16,20 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
+
+    myDBHelper mDBHelper;
+    SQLiteDatabase sqlDB;
 
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
@@ -36,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     int[] buttons={R.id.btn0,R.id.btn1,R.id.btn2,R.id.btn3,R.id.btn4,R.id.btn5,R.id.btn6,R.id.btn7,R.id.btn8,R.id.btn9,
             R.id.btn_backspace,R.id.btn_clr,R.id.btn_enter,R.id.btn_sum,R.id.btn_sub,R.id.btn_mul,R.id.btn_div};
     String[] filters={"finish_app","background_to_red","background_to_green","background_to_blue"};
+    String cTitle, cStr;
 
     class BtnOnClickListener implements Button.OnClickListener{
         @Override
@@ -132,6 +140,43 @@ public class MainActivity extends AppCompatActivity {
         for(String str:filters) intentFilter.addAction(str);
         registerReceiver(receiver, intentFilter);
 
+        mDBHelper = new myDBHelper(this);
+        Button btn_db_insert=(Button)findViewById(R.id.btn_db_insert);
+        btn_db_insert.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                if(!enter_clicked) {
+                    Toast.makeText(MainActivity.this, "= 버튼을 눌러 계산을 완료시키십시오", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                AlertDialog.Builder builder=new AlertDialog.Builder(MainActivity.this);
+                builder.setTitle("계산에 대한 간단한 설명 입력");
+                final EditText input=new EditText(MainActivity.this);
+                input.setInputType(InputType.TYPE_CLASS_TEXT);
+                builder.setView(input);
+                builder.setPositiveButton("save", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        cTitle=input.getText().toString();
+                    }
+                });
+                builder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.cancel();
+                    }
+                });
+                builder.show();
+
+
+                sqlDB=mDBHelper.getWritableDatabase();
+                //mDBHelper.onUpgrade(sqlDB,1,2); 초기화 위한 코드
+                //sqlDB.execSQL("INSERT INTO calcRecords VALUES ('"+"'cTitle,'"+"'str.getText().toString()',"+Double.toString(finalResult)+");");
+                //sqlDB.close();
+                //Toast.makeText(MainActivity.this, "입력되었습니다.", Toast.LENGTH_SHORT).show();
+            }
+        });
+
         // BtnOnClickListener 객체 생성 후, 모든 버튼의 이벤트 리스너로 지정해준다.
         BtnOnClickListener onClickListener=new BtnOnClickListener();
         for(int temp:buttons) {
@@ -166,6 +211,21 @@ public class MainActivity extends AppCompatActivity {
 
             default:
                 return true;
+        }
+    }
+
+    public class myDBHelper extends SQLiteOpenHelper{
+        public myDBHelper(Context context){
+            super(context,"calcDB",null,1);
+        }
+        @Override
+        public void onCreate(SQLiteDatabase db) {
+            db.execSQL("CREATE TABLE calcRecords (cId INT PRIMARY KEY AUTOINCREMENT, cTitle CHAR(100), cStr CHAR(100), cResult DOUBLE);");
+        }
+        @Override
+        public void onUpgrade(SQLiteDatabase db, int i, int i1) {
+            db.execSQL("DROP TABLE IF EXISTS calcDB");
+            onCreate(db);
         }
     }
 
@@ -210,6 +270,7 @@ public class MainActivity extends AppCompatActivity {
     }
     public void enter_btn_clicked(){
         if(op_pressed||enter_clicked) return; // enter 다시 누르면 이전계산 반복하도록 구현하기
+        cStr=str.getText().toString(); // db에 저장위해 수식 변수에 저장
         switch (nextOp)
         {
             case "+":
